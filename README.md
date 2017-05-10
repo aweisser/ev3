@@ -31,5 +31,12 @@ export PATH=$PATH:/usr/local/go/bin
 
 Create Build
 ```
-go build ev3.go
+GOOS=linux GOARCH=arm GOARM=5 go build ev3.go
+```
+
+Troubleshooting in case of "go build runtime: linux/amd64 must be bootstrapped using make.bash"
+-> Follow these instructions http://stackoverflow.com/questions/27412601/cross-compiling-go
+with 
+```
+sudo GOOS=linux GOARCH=arm GOARM=5 ./make.bash --no-clean
 ```
