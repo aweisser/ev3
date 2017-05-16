@@ -1,4 +1,4 @@
-package ev3
+package robot
 
 import "testing"
 import "fmt"
