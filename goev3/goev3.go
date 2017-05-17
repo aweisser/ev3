@@ -23,7 +23,7 @@ const (
 type goEV3Engine struct {
 }
 
-func (e *goEV3Engine) Say(text string) {
+func (e *goEV3Engine) Speak(text string) {
 	TTS.Speak(text)
 }
 

@@ -7,7 +7,12 @@ import (
 
 // Speaker enables speech capabilities
 type Speaker interface {
-	Say(text string)
+	Speak(text string)
+}
+
+// SoundPlayer enables sound playing capabilities
+type SoundPlayer interface {
+	Play(pathToAudio string)
 }
 
 // Printer enables printing capabilities
@@ -38,7 +43,7 @@ type Robot struct {
 
 // Greet with your name
 func (r *Robot) Greet() {
-	r.SpeechModule.Say(fmt.Sprintf("Hi. My name is %v.", r.Name))
+	r.SpeechModule.Speak(fmt.Sprintf("Hi. My name is %v.", r.Name))
 }
 
 // Move forward (if steps are positive) or backward (if steps are negative)

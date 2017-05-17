@@ -15,7 +15,7 @@ func (mock *Mock) verify(data interface{}) {
 	}
 }
 
-func (mock *Mock) Say(text string) {
+func (mock *Mock) Speak(text string) {
 	mock.verify(text)
 }
 
