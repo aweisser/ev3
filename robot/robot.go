@@ -37,14 +37,19 @@ type Position struct {
 	Orientation Direction
 }
 
-// Speaker enables speech abilities
+// Speaker enables speech capabilities
 type Speaker interface {
 	Say(text string)
 }
 
-// Printer enables printing abilities
+// Printer enables printing capabilities
 type Printer interface {
 	Print(text string)
+}
+
+// Mover enables moving capabilities
+type Mover interface {
+	Move(steps int)
 }
 
 // Robot represents an executable EV3 device
@@ -54,6 +59,7 @@ type Robot struct {
 	Position     Position
 	SpeechModule Speaker
 	PrintModule  Printer
+	MoveModule   Mover
 }
 
 // Greet with your name
@@ -61,15 +67,35 @@ func (r *Robot) Greet() {
 	r.SpeechModule.Say(fmt.Sprintf("Hi. My name is %v.", r.Name))
 }
 
+// Move forward (if steps are positive) or backward (if steps are negative)
+func (r *Robot) Move(steps int) {
+	r.MoveModule.Move(steps)
+	switch r.Position.Orientation {
+	case North:
+		r.Position.Y -= steps
+	case East:
+		r.Position.X += steps
+	case South:
+		r.Position.Y += steps
+	case West:
+		r.Position.X -= steps
+	}
+}
+
 // PrintEnvironment prints the current environment and the position of the robot
 func (r *Robot) PrintEnvironment() {
-	lines := strings.Split(r.EnvMap, "\n")
+	rows := strings.Split(r.EnvMap, "\n")
+
+	// ignore first leading blank line (only for better experience with multiline strings)
 	offset := 0
-	if lines[0] == "" {
+	if rows[0] == "" {
 		offset = 1
 	}
-	line := lines[r.Position.Y]
-	newLine := fmt.Sprintf("%v%v%v", line[0:r.Position.X+1], r.Position.Orientation.String(), line[r.Position.X+2:len(line)])
-	lines[r.Position.Y+offset] = newLine
-	r.PrintModule.Print(strings.Join(lines, "\n"))
+	rowIndexOfRobot := r.Position.Y + offset
+	rows[rowIndexOfRobot] = placeRobot(r, rows[rowIndexOfRobot])
+	r.PrintModule.Print(strings.Join(rows, "\n"))
+}
+
+func placeRobot(r *Robot, row string) string {
+	return fmt.Sprintf("%v%v%v", row[0:r.Position.X+1], r.Position.Orientation.String(), row[r.Position.X+2:len(row)])
 }
