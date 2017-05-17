@@ -93,6 +93,28 @@ func Test_RobotShouldIncreasePositionYAfterMoveNegativeStepsHeadingNorth(t *test
 	}
 }
 
+func Test_RobotShouldIncreaseYPositionAfterMovePositiveStepsHeadingSouth(t *testing.T) {
+	r := Robot{}
+	r.MoveModule = &Mock{t: t, expected: 1}
+	r.Position = Position{X: 6, Y: 2, Orientation: South}
+	r.Move(1)
+	expectedPosition := Position{X: 6, Y: 3, Orientation: South}
+	if r.Position != expectedPosition {
+		t.Errorf("Expected %v, but was %v", expectedPosition, r.Position)
+	}
+}
+
+func Test_RobotShouldDecreasePositionYAfterMoveNegativeStepsHeadingSouth(t *testing.T) {
+	r := Robot{}
+	r.MoveModule = &Mock{t: t, expected: -1}
+	r.Position = Position{X: 6, Y: 2, Orientation: South}
+	r.Move(-1)
+	expectedPosition := Position{X: 6, Y: 1, Orientation: South}
+	if r.Position != expectedPosition {
+		t.Errorf("Expected %v, but was %v", expectedPosition, r.Position)
+	}
+}
+
 func Test_RobotShouldMoveOnToTheNextFieldTowordsItsOrientation(t *testing.T) {
 	r := Robot{}
 	r.EnvMap = `
