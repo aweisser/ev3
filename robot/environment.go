@@ -2,9 +2,12 @@ package robot
 
 import "strings"
 
+type Centimeters float64
+
 // EnvironmentalMap in which the robot acts
 type EnvironmentalMap struct {
-	Map string
+	Map        string
+	SquareSize Centimeters
 }
 
 func (e *EnvironmentalMap) rows() []string {
@@ -20,7 +23,7 @@ func (e *EnvironmentalMap) offset() int {
 	return offset
 }
 
-func (e *EnvironmentalMap) isObstacle(p Position) bool {
+func (e *EnvironmentalMap) isObstacleAt(p Position) bool {
 	return e.isOutsideMap(p) || e.rows()[p.Y+e.offset()][p.X] == '#'
 }
 

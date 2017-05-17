@@ -7,27 +7,27 @@ import (
 
 // Speaker enables speech capabilities
 type Speaker interface {
-	Speak(text string)
+	Speak(text string) error
 }
 
 // SoundPlayer enables sound playing capabilities
 type SoundPlayer interface {
-	Play(pathToAudio string)
+	Play(pathToAudio string) error
 }
 
 // Printer enables printing capabilities
 type Printer interface {
-	Print(text string)
+	Print(text string) error
 }
 
 // Mover enables moving capabilities
 type Mover interface {
-	Move(steps int)
+	Move(distance Centimeters) error
 }
 
 // EventHandler enables handling for generic input events (like buttons)
 type EventHandler interface {
-	Handle(event interface{})
+	Handle(event interface{}) error
 }
 
 // Robot represents an executable EV3 device
@@ -62,20 +62,26 @@ func (r *Robot) Move(steps int) error {
 	case West:
 		newPosition.X = r.Position.X - steps
 	}
-	if !r.EnvMap.isObstacle(newPosition) {
-		r.MoveModule.Move(steps)
-		r.Position = newPosition
+	if r.EnvMap.isObstacleAt(newPosition) {
+		return fmt.Errorf("The robot can't move %v steps because their are obstacles in the way.Here's the current map: %v", steps, mapWithRobot(r))
 	}
+	distance := Centimeters(float64(steps) * float64(r.EnvMap.SquareSize))
+	r.MoveModule.Move(distance)
+	r.Position = newPosition
 	return nil
 }
 
 // PrintEnvironment including the position of the robot
 func (r *Robot) PrintEnvironment() {
+	r.PrintModule.Print(mapWithRobot(r))
+}
+
+func mapWithRobot(r *Robot) string {
 	rows := r.EnvMap.rows()
 	offset := r.EnvMap.offset()
 	rowIndexOfRobot := r.Position.Y + offset
 	rows[rowIndexOfRobot] = placeRobotInRow(r, rows[rowIndexOfRobot])
-	r.PrintModule.Print(strings.Join(rows, "\n"))
+	return strings.Join(rows, "\n")
 }
 
 func placeRobotInRow(r *Robot, row string) string {

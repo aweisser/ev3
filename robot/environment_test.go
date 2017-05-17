@@ -92,7 +92,7 @@ func Test_PositionOutsideMapHasAnObstacle(t *testing.T) {
 #       #
 #########`
 	p := Position{X: 9, Y: 1}
-	if !m.isObstacle(p) {
+	if !m.isObstacleAt(p) {
 		t.Errorf("%v should be an obstacle in map %v", p, m)
 	}
 }
@@ -104,7 +104,7 @@ func Test_UpperWallShouldBeAnObstacle(t *testing.T) {
 #       #
 #########`
 	p := Position{X: 4, Y: 0}
-	if !m.isObstacle(p) {
+	if !m.isObstacleAt(p) {
 		t.Errorf("%v should be an obstacle in map %v", p, m)
 	}
 }
@@ -116,7 +116,7 @@ func Test_LeftWallShouldBeAnObstacle(t *testing.T) {
 #       #
 #########`
 	p := Position{X: 0, Y: 1}
-	if !m.isObstacle(p) {
+	if !m.isObstacleAt(p) {
 		t.Errorf("%v should be an obstacle in map %v", p, m)
 	}
 }
@@ -128,7 +128,7 @@ func Test_RightWallShouldBeAnObstacle(t *testing.T) {
 #       #
 #########`
 	p := Position{X: 8, Y: 1}
-	if !m.isObstacle(p) {
+	if !m.isObstacleAt(p) {
 		t.Errorf("%v should be an obstacle in map %v", p, m)
 	}
 }
@@ -140,7 +140,7 @@ func Test_BottomWallShouldBeAnObstacle(t *testing.T) {
 #       #
 #########`
 	p := Position{X: 4, Y: 2}
-	if !m.isObstacle(p) {
+	if !m.isObstacleAt(p) {
 		t.Errorf("%v should be an obstacle in map %v", p, m)
 	}
 }
@@ -152,7 +152,7 @@ func Test_FreeObstacleInTheMiddleOfTheMapShouldBeAnObstacle(t *testing.T) {
 #   #   #
 #########`
 	p := Position{X: 4, Y: 1}
-	if !m.isObstacle(p) {
+	if !m.isObstacleAt(p) {
 		t.Errorf("%v should be an obstacle in map %v", p, m)
 	}
 }
@@ -164,7 +164,7 @@ func Test_FreeSpaceInTheMiddleOfTheMapShouldNotBeAnObstacle(t *testing.T) {
 #       #
 #########`
 	p := Position{X: 4, Y: 1}
-	if m.isObstacle(p) {
+	if m.isObstacleAt(p) {
 		t.Errorf("%v should not be an obstacle in map %v", p, m)
 	}
 }
