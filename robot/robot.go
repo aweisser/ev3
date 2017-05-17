@@ -5,38 +5,6 @@ import (
 	"strings"
 )
 
-// The Direction of the robot
-type Direction int
-
-const (
-	North Direction = iota
-	East
-	South
-	West
-)
-
-func (d Direction) String() string {
-	switch d {
-	case North:
-		return "▲"
-	case East:
-		return "▶"
-	case South:
-		return "▼"
-	case West:
-		return "◀"
-	default:
-		return "X"
-	}
-}
-
-// Position of the robot in the environmental map including Orientation
-type Position struct {
-	X           int
-	Y           int
-	Orientation Direction
-}
-
 // Speaker enables speech capabilities
 type Speaker interface {
 	Say(text string)
@@ -55,7 +23,7 @@ type Mover interface {
 // Robot represents an executable EV3 device
 type Robot struct {
 	Name         string
-	EnvMap       string
+	EnvMap       EnvironmentalMap
 	Position     Position
 	SpeechModule Speaker
 	PrintModule  Printer
@@ -68,34 +36,37 @@ func (r *Robot) Greet() {
 }
 
 // Move forward (if steps are positive) or backward (if steps are negative)
-func (r *Robot) Move(steps int) {
-	r.MoveModule.Move(steps)
+func (r *Robot) Move(steps int) error {
+	if r.EnvMap.Map == "" {
+		return fmt.Errorf("The robot can't move because no environmental map is given")
+	}
+	newPosition := r.Position
 	switch r.Position.Orientation {
 	case North:
-		r.Position.Y -= steps
+		newPosition.Y = r.Position.Y - steps
 	case East:
-		r.Position.X += steps
+		newPosition.X = r.Position.X + steps
 	case South:
-		r.Position.Y += steps
+		newPosition.Y = r.Position.Y + steps
 	case West:
-		r.Position.X -= steps
+		newPosition.X = r.Position.X - steps
 	}
+	if !r.EnvMap.isObstacle(newPosition) {
+		r.MoveModule.Move(steps)
+		r.Position = newPosition
+	}
+	return nil
 }
 
 // PrintEnvironment prints the current environment and the position of the robot
 func (r *Robot) PrintEnvironment() {
-	rows := strings.Split(r.EnvMap, "\n")
-
-	// ignore first leading blank line (only for better experience with multiline strings)
-	offset := 0
-	if rows[0] == "" {
-		offset = 1
-	}
+	rows := r.EnvMap.rows()
+	offset := r.EnvMap.offset()
 	rowIndexOfRobot := r.Position.Y + offset
-	rows[rowIndexOfRobot] = placeRobot(r, rows[rowIndexOfRobot])
+	rows[rowIndexOfRobot] = placeRobotInRow(r, rows[rowIndexOfRobot])
 	r.PrintModule.Print(strings.Join(rows, "\n"))
 }
 
-func placeRobot(r *Robot, row string) string {
+func placeRobotInRow(r *Robot, row string) string {
 	return fmt.Sprintf("%v%v%v", row[0:r.Position.X+1], r.Position.Orientation.String(), row[r.Position.X+2:len(row)])
 }

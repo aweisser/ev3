@@ -52,7 +52,7 @@ func Test_DirectionNorthShouldBePrintable(t *testing.T) {
 
 func Test_RobotShouldByAbleToLocateItselfOnAnEnvironmentalMap(t *testing.T) {
 	r := Robot{}
-	r.EnvMap = `
+	r.EnvMap.Map = `
 ###########
 #         #
 #         #
@@ -73,6 +73,12 @@ func Test_RobotShouldByAbleToLocateItselfOnAnEnvironmentalMap(t *testing.T) {
 
 func Test_RobotShouldDecreaseYPositionAfterMovePositiveStepsHeadingNorth(t *testing.T) {
 	r := Robot{}
+	r.EnvMap.Map = `
+###########
+#         #
+#         #
+#         #
+###########`
 	r.MoveModule = &Mock{t: t, expected: 1}
 	r.Position = Position{X: 6, Y: 2, Orientation: North}
 	r.Move(1)
@@ -84,6 +90,12 @@ func Test_RobotShouldDecreaseYPositionAfterMovePositiveStepsHeadingNorth(t *test
 
 func Test_RobotShouldIncreasePositionYAfterMoveNegativeStepsHeadingNorth(t *testing.T) {
 	r := Robot{}
+	r.EnvMap.Map = `
+###########
+#         #
+#         #
+#         #
+###########`
 	r.MoveModule = &Mock{t: t, expected: -1}
 	r.Position = Position{X: 6, Y: 2, Orientation: North}
 	r.Move(-1)
@@ -95,6 +107,12 @@ func Test_RobotShouldIncreasePositionYAfterMoveNegativeStepsHeadingNorth(t *test
 
 func Test_RobotShouldIncreaseYPositionAfterMovePositiveStepsHeadingSouth(t *testing.T) {
 	r := Robot{}
+	r.EnvMap.Map = `
+###########
+#         #
+#         #
+#         #
+###########`
 	r.MoveModule = &Mock{t: t, expected: 1}
 	r.Position = Position{X: 6, Y: 2, Orientation: South}
 	r.Move(1)
@@ -106,6 +124,12 @@ func Test_RobotShouldIncreaseYPositionAfterMovePositiveStepsHeadingSouth(t *test
 
 func Test_RobotShouldDecreasePositionYAfterMoveNegativeStepsHeadingSouth(t *testing.T) {
 	r := Robot{}
+	r.EnvMap.Map = `
+###########
+#         #
+#         #
+#         #
+###########`
 	r.MoveModule = &Mock{t: t, expected: -1}
 	r.Position = Position{X: 6, Y: 2, Orientation: South}
 	r.Move(-1)
@@ -117,6 +141,12 @@ func Test_RobotShouldDecreasePositionYAfterMoveNegativeStepsHeadingSouth(t *test
 
 func Test_RobotShouldIncreaseXPositionAfterMovePositiveStepsHeadingEast(t *testing.T) {
 	r := Robot{}
+	r.EnvMap.Map = `
+###########
+#         #
+#         #
+#         #
+###########`
 	r.MoveModule = &Mock{t: t, expected: 1}
 	r.Position = Position{X: 3, Y: 2, Orientation: East}
 	r.Move(1)
@@ -128,6 +158,12 @@ func Test_RobotShouldIncreaseXPositionAfterMovePositiveStepsHeadingEast(t *testi
 
 func Test_RobotShouldDecreasePositionXAfterMoveNegativeStepsHeadingEast(t *testing.T) {
 	r := Robot{}
+	r.EnvMap.Map = `
+###########
+#         #
+#         #
+#         #
+###########`
 	r.MoveModule = &Mock{t: t, expected: -1}
 	r.Position = Position{X: 3, Y: 2, Orientation: East}
 	r.Move(-1)
@@ -139,6 +175,12 @@ func Test_RobotShouldDecreasePositionXAfterMoveNegativeStepsHeadingEast(t *testi
 
 func Test_RobotShouldDecreaseXPositionAfterMovePositiveStepsHeadingWest(t *testing.T) {
 	r := Robot{}
+	r.EnvMap.Map = `
+###########
+#         #
+#         #
+#         #
+###########`
 	r.MoveModule = &Mock{t: t, expected: 1}
 	r.Position = Position{X: 3, Y: 2, Orientation: West}
 	r.Move(1)
@@ -150,6 +192,12 @@ func Test_RobotShouldDecreaseXPositionAfterMovePositiveStepsHeadingWest(t *testi
 
 func Test_RobotShouldIncreasePositionXAfterMoveNegativeStepsHeadingWest(t *testing.T) {
 	r := Robot{}
+	r.EnvMap.Map = `
+###########
+#         #
+#         #
+#         #
+###########`
 	r.MoveModule = &Mock{t: t, expected: -1}
 	r.Position = Position{X: 3, Y: 2, Orientation: West}
 	r.Move(-1)
@@ -161,7 +209,7 @@ func Test_RobotShouldIncreasePositionXAfterMoveNegativeStepsHeadingWest(t *testi
 
 func Test_RobotShouldMoveOnToTheNextFieldTowordsItsOrientation(t *testing.T) {
 	r := Robot{}
-	r.EnvMap = `
+	r.EnvMap.Map = `
 ###########
 #         #
 #         #
@@ -194,4 +242,38 @@ func Test_RobotShouldMoveOnToTheNextFieldTowordsItsOrientation(t *testing.T) {
 ###########`
 	r.PrintModule = &Mock{t: t, expected: expectedMapAfterMove}
 	r.PrintEnvironment()
+}
+
+func Test_RobotCannotMoveThroughObstacles(t *testing.T) {
+	r := Robot{}
+	r.EnvMap.Map = `
+###########
+#         #
+#         #
+#         #
+###########`
+	r.Position = Position{X: 6, Y: 1, Orientation: North}
+
+	expectedMap := `
+###########
+#      ▲  #
+#         #
+#         #
+###########`
+	r.PrintModule = &Mock{t: t, expected: expectedMap}
+	r.PrintEnvironment()
+
+	r.MoveModule = &Mock{t: t, expected: 2}
+	r.Move(1)
+
+	r.PrintModule = &Mock{t: t, expected: expectedMap}
+	r.PrintEnvironment()
+}
+
+func Test_RobotWithoutEnvironmentalMapCanNotMoveAtAll(t *testing.T) {
+	r := Robot{}
+	err := r.Move(1)
+	if err == nil {
+		t.Errorf("Move should return error on missing env map")
+	}
 }
