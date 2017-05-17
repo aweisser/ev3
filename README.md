@@ -29,9 +29,9 @@ sudo rm -f go1.4.2.linux-amd64.tar.gz
 export PATH=$PATH:/usr/local/go/bin
 ```
 
-Create Build
+Create executable
 ```
-GOOS=linux GOARCH=arm GOARM=5 go build ev3.go
+GOPATH=/ GOOS=linux GOARCH=arm GOARM=5 go build cmd/ev3rest/ev3rest.go
 ```
 
 Troubleshooting in case of "go build runtime: linux/amd64 must be bootstrapped using make.bash"
