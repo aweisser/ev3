@@ -58,16 +58,13 @@ func (e *goEV3Engine) Move(distance robot.Centimeters) error {
 		return fmt.Errorf("Moving back is not implemented yet")
 	}
 
-	// Unlike other MINDSTORMS software, the units of measurement used are in tachometer counts rather than rotations or degrees.
-	// For the NXT and EV3 motors, one pulse of the tachometer = one degree.
-
 	// check current position
 	positionLeftWheel := Motor.CurrentPosition(left_wheel)
 	positionRightWheel := Motor.CurrentPosition(right_wheel)
 
 	// calc final position
-	tm := tachometer{distance: distance, wheelDiameter: 3.2} // TODO hardcoded
-	degreeToMove := int32(tm.counts())
+	tm := robot.Tachometer{WheelDiameter: 3.2, PulsesPerDegree: 1.0} // TODO hardcoded
+	degreeToMove := int32(tm.CountsForDistance(distance))
 	positionLeftWheel += degreeToMove
 	positionRightWheel += degreeToMove
 
