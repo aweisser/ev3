@@ -11,7 +11,7 @@ import (
 var ev3 = goev3.Create()
 
 func main() {
-	defer ev3.HandleEvent(goev3.WAIT_FOR_ESCAPE_BUTTON)
+	defer ev3.Handle(goev3.WAIT_FOR_ESCAPE_BUTTON)
 	fmt.Printf("Starting EV3 restless command control ...")
 	http.HandleFunc("/", index)
 	http.HandleFunc("/hello", hello)

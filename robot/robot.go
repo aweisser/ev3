@@ -20,6 +20,11 @@ type Mover interface {
 	Move(steps int)
 }
 
+// EventHandler enables handling for generic input events (like buttons)
+type EventHandler interface {
+	Handle(event interface{})
+}
+
 // Robot represents an executable EV3 device
 type Robot struct {
 	Name         string
@@ -28,6 +33,7 @@ type Robot struct {
 	SpeechModule Speaker
 	PrintModule  Printer
 	MoveModule   Mover
+	EventHandler EventHandler
 }
 
 // Greet with your name
@@ -58,7 +64,7 @@ func (r *Robot) Move(steps int) error {
 	return nil
 }
 
-// PrintEnvironment prints the current environment and the position of the robot
+// PrintEnvironment including the position of the robot
 func (r *Robot) PrintEnvironment() {
 	rows := r.EnvMap.rows()
 	offset := r.EnvMap.offset()
@@ -69,4 +75,9 @@ func (r *Robot) PrintEnvironment() {
 
 func placeRobotInRow(r *Robot, row string) string {
 	return fmt.Sprintf("%v%v%v", row[0:r.Position.X+1], r.Position.Orientation.String(), row[r.Position.X+2:len(row)])
+}
+
+// Handle arbitrary events
+func (r *Robot) Handle(event interface{}) {
+	r.EventHandler.Handle(event)
 }
