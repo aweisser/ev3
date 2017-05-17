@@ -10,13 +10,16 @@ import (
 )
 
 // Create a robot with goev3 engine
-func Create() robot.Robot {
+func Create(WheelDiameter robot.Centimeters) robot.Robot {
 	goEV3EngineInstance := new(goEV3Engine)
 	return robot.Robot{
 		Name:         "GoEV3",
 		SpeechModule: goEV3EngineInstance,
 		MoveModule:   goEV3EngineInstance,
+		// For the NXT and EV3 motors, one pulse of the tachometer = one degree. So the tachometer pulse count per one rotation is 360.
+		Tachometer: robot.Tachometer{WheelDiameter: WheelDiameter, CountPerRot: 360},
 	}
+
 }
 
 type eventType int
@@ -48,7 +51,7 @@ func (e *goEV3Engine) Handle(event interface{}) error {
 	return nil
 }
 
-func (e *goEV3Engine) Move(distance robot.Centimeters) error {
+func (e *goEV3Engine) Move(distance robot.Centimeters, tachometer robot.Tachometer) error {
 
 	if distance == 0 {
 		return nil
@@ -63,8 +66,7 @@ func (e *goEV3Engine) Move(distance robot.Centimeters) error {
 	positionRightWheel := Motor.CurrentPosition(right_wheel)
 
 	// calc final position
-	tm := robot.Tachometer{WheelDiameter: 3.2, PulsesPerDegree: 1.0} // TODO hardcoded
-	degreeToMove := int32(tm.CountsForDistance(distance))
+	degreeToMove := int32(tachometer.CountsForDistance(distance))
 	positionLeftWheel += degreeToMove
 	positionRightWheel += degreeToMove
 
@@ -83,6 +85,7 @@ func (e *goEV3Engine) Move(distance robot.Centimeters) error {
 	return nil
 }
 
+// Speed is similar in that the units are in tachometer pulse counts per second.
 func speed(distance robot.Centimeters) int16 {
 	var speed int16
 	switch {

@@ -8,7 +8,7 @@ import (
 	"github.com/aweisser/ev3/goev3"
 )
 
-var ev3 = goev3.Create()
+var ev3 = goev3.Create(3.5)
 
 func main() {
 	defer ev3.Handle(goev3.WAIT_FOR_ESCAPE_BUTTON)

@@ -22,7 +22,7 @@ type Printer interface {
 
 // Mover enables moving capabilities
 type Mover interface {
-	Move(distance Centimeters) error
+	Move(distance Centimeters, tachometer Tachometer) error
 }
 
 // EventHandler enables handling for generic input events (like buttons)
@@ -35,6 +35,7 @@ type Robot struct {
 	Name         string
 	EnvMap       EnvironmentalMap
 	Position     Position
+	Tachometer   Tachometer
 	SpeechModule Speaker
 	PrintModule  Printer
 	MoveModule   Mover
@@ -66,7 +67,7 @@ func (r *Robot) Move(steps int) error {
 		return fmt.Errorf("The robot can't move %v steps because their are obstacles in the way.Here's the current map: %v", steps, mapWithRobot(r))
 	}
 	distance := Centimeters(float64(steps) * float64(r.EnvMap.SquareSize))
-	r.MoveModule.Move(distance)
+	r.MoveModule.Move(distance, r.Tachometer)
 	r.Position = newPosition
 	return nil
 }

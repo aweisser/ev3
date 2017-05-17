@@ -24,7 +24,7 @@ func (mock *Mock) Print(text string) error {
 	return mock.verify(text)
 }
 
-func (mock *Mock) Move(distance Centimeters) error {
+func (mock *Mock) Move(distance Centimeters, tachometer Tachometer) error {
 	return mock.verify(distance)
 }
 
