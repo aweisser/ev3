@@ -5,12 +5,13 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/aweisser/GoEV3/Button"
-	"github.com/aweisser/GoEV3/TTS"
+	"github.com/aweisser/ev3/goev3"
 )
 
+var ev3 = goev3.Create()
+
 func main() {
-	defer Button.Wait(Button.Escape)
+	defer ev3.HandleEvent(goev3.WAIT_FOR_ESCAPE_BUTTON)
 	fmt.Printf("Starting EV3 restless command control ...")
 	http.HandleFunc("/", index)
 	http.HandleFunc("/hello", hello)
@@ -22,5 +23,5 @@ func index(w http.ResponseWriter, r *http.Request) {
 }
 
 func hello(w http.ResponseWriter, r *http.Request) {
-	TTS.Speak("This is EV3. Ready for action.")
+	ev3.Greet()
 }
