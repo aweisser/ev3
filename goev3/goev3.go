@@ -10,14 +10,14 @@ import (
 )
 
 // Create a robot with goev3 engine
-func Create(WheelDiameter robot.Centimeters) robot.Robot {
+func Create(specs robot.Specs) robot.Robot {
 	goEV3EngineInstance := new(goEV3Engine)
 	return robot.Robot{
 		Name:         "GoEV3",
 		SpeechModule: goEV3EngineInstance,
 		MoveModule:   goEV3EngineInstance,
 		// For the NXT and EV3 motors, one pulse of the tachometer = one degree. So the tachometer pulse count per one rotation is 360.
-		Tachometer: robot.Tachometer{WheelDiameter: WheelDiameter, CountPerRot: 360},
+		Tachometer: robot.Tachometer{WheelDiameter: specs.WheelDiameter, CountPerRot: 360},
 	}
 
 }

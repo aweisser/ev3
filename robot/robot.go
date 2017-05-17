@@ -5,6 +5,11 @@ import (
 	"strings"
 )
 
+// Specs is simple parameter object holding roboter specs. It should be used for better readability when constructing roboters
+type Specs struct {
+	WheelDiameter Centimeters
+}
+
 // Speaker enables speech capabilities
 type Speaker interface {
 	Speak(text string) error
