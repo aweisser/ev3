@@ -2,6 +2,7 @@ package robot
 
 import (
 	"fmt"
+	"math"
 	"strings"
 )
 
@@ -57,6 +58,9 @@ func (r *Robot) Move(steps int) error {
 	if r.EnvMap.Map == "" {
 		return fmt.Errorf("The robot can't move because no environmental map is given")
 	}
+	if !r.canMoveToPosition(steps) {
+		return fmt.Errorf("The robot can't move %v steps because their are obstacles in the way.Here's the current map: %v", steps, mapWithRobot(r))
+	}
 	newPosition := r.Position
 	switch r.Position.Orientation {
 	case North:
@@ -68,13 +72,33 @@ func (r *Robot) Move(steps int) error {
 	case West:
 		newPosition.X = r.Position.X - steps
 	}
-	if r.EnvMap.isObstacleAt(newPosition) {
-		return fmt.Errorf("The robot can't move %v steps because their are obstacles in the way.Here's the current map: %v", steps, mapWithRobot(r))
-	}
 	distance := Centimeters(float64(steps) * float64(r.EnvMap.SquareSize))
 	r.MoveModule.Move(distance, r.Tachometer)
 	r.Position = newPosition
 	return nil
+}
+
+func (r *Robot) canMoveToPosition(steps int) bool {
+	newPosition := r.Position
+	absSteps := int(math.Abs(float64(steps)))
+	singleStep := steps / absSteps
+	for i := 0; i < absSteps; i++ {
+		switch r.Position.Orientation {
+		case North:
+			newPosition.Y = newPosition.Y - singleStep
+		case East:
+			newPosition.X = newPosition.X + singleStep
+		case South:
+			newPosition.Y = newPosition.Y + singleStep
+		case West:
+			newPosition.X = newPosition.X - singleStep
+		}
+		obstacleAt := r.EnvMap.isObstacleAt(newPosition)
+		if obstacleAt {
+			return false
+		}
+	}
+	return true
 }
 
 // PrintEnvironment including the position of the robot
@@ -91,7 +115,7 @@ func mapWithRobot(r *Robot) string {
 }
 
 func placeRobotInRow(r *Robot, row string) string {
-	return fmt.Sprintf("%v%v%v", row[0:r.Position.X+1], r.Position.Orientation.String(), row[r.Position.X+2:len(row)])
+	return fmt.Sprintf("%v%v%v", row[0:r.Position.X], r.Position.Orientation.String(), row[r.Position.X+1:len(row)])
 }
 
 // Handle arbitrary events

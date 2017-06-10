@@ -24,7 +24,11 @@ func (e *EnvironmentalMap) offset() int {
 }
 
 func (e *EnvironmentalMap) isObstacleAt(p Position) bool {
-	return e.isOutsideMap(p) || e.rows()[p.Y+e.offset()][p.X] == '#'
+	return e.isOutsideMap(p) || e.isObstacleInMap(p)
+}
+
+func (e *EnvironmentalMap) isObstacleInMap(p Position) bool {
+	return e.rows()[p.Y+e.offset()][p.X] == '#'
 }
 
 func (e *EnvironmentalMap) isOutsideMap(p Position) bool {
