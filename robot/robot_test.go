@@ -281,6 +281,33 @@ func Test_RobotCannotMoveThroughObstacles(t *testing.T) {
 	r.PrintEnvironment()
 }
 
+func Test_RobotCannotMoveThroughObstaclesInItsWay(t *testing.T) {
+	r := Robot{}
+	r.EnvMap.SquareSize = 1
+	r.EnvMap.Map = `
+###########
+#         #
+#      #  #
+#         #
+###########`
+	r.Position = Position{X: 6, Y: 3, Orientation: North}
+
+	expectedMap := `
+###########
+#         #
+#      #  #
+#      ▲  #
+###########`
+	r.PrintModule = &Mock{t: t, expected: expectedMap}
+	r.PrintEnvironment()
+
+	r.MoveModule = &Mock{t: t, expected: Centimeters(2)}
+	r.Move(2)
+
+	r.PrintModule = &Mock{t: t, expected: expectedMap}
+	r.PrintEnvironment()
+}
+
 func Test_RobotWithoutEnvironmentalMapCanNotMoveAtAll(t *testing.T) {
 	r := Robot{}
 	r.EnvMap.SquareSize = 1
