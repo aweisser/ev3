@@ -58,47 +58,49 @@ func (r *Robot) Move(steps int) error {
 	if r.EnvMap.Map == "" {
 		return fmt.Errorf("The robot can't move because no environmental map is given")
 	}
-	if !r.canMoveToPosition(steps) {
-		return fmt.Errorf("The robot can't move %v steps because their are obstacles in the way.Here's the current map: %v", steps, mapWithRobot(r))
-	}
-	newPosition := r.Position
-	switch r.Position.Orientation {
-	case North:
-		newPosition.Y = r.Position.Y - steps
-	case East:
-		newPosition.X = r.Position.X + steps
-	case South:
-		newPosition.Y = r.Position.Y + steps
-	case West:
-		newPosition.X = r.Position.X - steps
+	err := r.tryMoveToPosition(steps)
+	if err != nil {
+		return err
 	}
 	distance := Centimeters(float64(steps) * float64(r.EnvMap.SquareSize))
 	r.MoveModule.Move(distance, r.Tachometer)
+	return nil
+}
+
+func (r *Robot) tryMoveToPosition(steps int) error {
+	newPosition := r.Position
+	absSteps := getAbsoluteSteps(steps)
+	singleStep := getMovingDirection(steps)
+	for i := 0; i < absSteps; i++ {
+		newPosition = r.moveSingleStepFrom(newPosition, singleStep)
+		if r.EnvMap.isObstacleAt(newPosition) {
+			return fmt.Errorf("The robot can't move %v steps because there are obstacles in the way.Here's the current map: %v", steps, mapWithRobot(r))
+		}
+	}
 	r.Position = newPosition
 	return nil
 }
 
-func (r *Robot) canMoveToPosition(steps int) bool {
-	newPosition := r.Position
-	absSteps := int(math.Abs(float64(steps)))
-	singleStep := steps / absSteps
-	for i := 0; i < absSteps; i++ {
-		switch r.Position.Orientation {
-		case North:
-			newPosition.Y = newPosition.Y - singleStep
-		case East:
-			newPosition.X = newPosition.X + singleStep
-		case South:
-			newPosition.Y = newPosition.Y + singleStep
-		case West:
-			newPosition.X = newPosition.X - singleStep
-		}
-		obstacleAt := r.EnvMap.isObstacleAt(newPosition)
-		if obstacleAt {
-			return false
-		}
+func (r *Robot) moveSingleStepFrom(p Position, step int) Position {
+	switch r.Position.Orientation {
+	case North:
+		p.Y = p.Y - step
+	case East:
+		p.X = p.X + step
+	case South:
+		p.Y = p.Y + step
+	case West:
+		p.X = p.X - step
 	}
-	return true
+	return p
+}
+
+func getAbsoluteSteps(steps int) int {
+	return int(math.Abs(float64(steps)))
+}
+
+func getMovingDirection(steps int) int {
+	return steps / getAbsoluteSteps(steps)
 }
 
 // PrintEnvironment including the position of the robot
