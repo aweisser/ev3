@@ -374,6 +374,68 @@ func Test_RobotCannotMoveThroughObstaclesInItsWayEast(t *testing.T) {
 	r.PrintEnvironment()
 }
 
+func Test_RobotCannotMoveThroughObstaclesInItsWayWest(t *testing.T) {
+	r := Robot{}
+	r.EnvMap.SquareSize = 1
+	r.EnvMap.Map = `
+###########
+#         #
+#      #  #
+#         #
+###########`
+	r.Position = Position{X: 8, Y: 2, Orientation: West}
+
+	expectedMap := `
+###########
+#         #
+#      #◀ #
+#         #
+###########`
+	r.PrintModule = &Mock{t: t, expected: expectedMap}
+	r.PrintEnvironment()
+
+	r.MoveModule = &Mock{t: t, expected: Centimeters(2)}
+	err := r.Move(2)
+
+	if err == nil {
+		t.Errorf("Expected error message")
+	}
+
+	r.PrintModule = &Mock{t: t, expected: expectedMap}
+	r.PrintEnvironment()
+}
+
+func Test_RobotCannotMoveThroughObstaclesMultipleStepsAway(t *testing.T) {
+	r := Robot{}
+	r.EnvMap.SquareSize = 1
+	r.EnvMap.Map = `
+###########
+#         #
+#      #  #
+#         #
+###########`
+	r.Position = Position{X: 5, Y: 2, Orientation: East}
+
+	expectedMap := `
+###########
+#         #
+#    ▶ #  #
+#         #
+###########`
+	r.PrintModule = &Mock{t: t, expected: expectedMap}
+	r.PrintEnvironment()
+
+	r.MoveModule = &Mock{t: t, expected: Centimeters(2)}
+	err := r.Move(3)
+
+	if err == nil {
+		t.Errorf("Expected error message")
+	}
+
+	r.PrintModule = &Mock{t: t, expected: expectedMap}
+	r.PrintEnvironment()
+}
+
 func Test_RobotWithoutEnvironmentalMapCanNotMoveAtAll(t *testing.T) {
 	r := Robot{}
 	r.EnvMap.SquareSize = 1
