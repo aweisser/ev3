@@ -2,9 +2,11 @@
 
 ## Precondition
 
-You have a EV3 Brick with ev3dev and GoEV3 (https://mattrajca.github.io/GoEV3/) installed.
+You have an EV3 Brick with ev3dev and GoEV3 (https://mattrajca.github.io/GoEV3/) installed.
 As pre build tarball with ARMv5 support I used http://dave.cheney.net/paste/go1.4.2.linux-arm~armv5-1.tar.gz.
 This works out of the box with the EV3 Brick.
+
+See also http://www.ev3dev.org/docs/getting-started/ for detailed instructions on how to install the ev3dev Linux OS on the EV3 brick.
 
 ## Cross Compile with Docker
 
